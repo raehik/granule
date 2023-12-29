@@ -101,6 +101,24 @@
           maxLayers = 100; # less than Docker max layers to allow extending
         };
 
+        packages.image-jackh = pkgs.dockerTools.streamLayeredImage {
+          name = "granule-jackh";
+          #tag = "granule-jackh";
+          contents = [
+            self'.packages.granule-benchmark pkgs.bash pkgs.coreutils
+            self'.packages.granule-repl-with-stdlib
+          ];
+          config = {
+            Entrypoint = [ "${self'.packages.granule-repl-with-stdlib}/bin/grepl" ];
+
+            # Granule syntax is UTF-8
+            # C.UTF-8 is builtin. to use en_US.UTF-8 etc, add glibcLocales into
+            # contents and point LOCALE_ARCHIVE to it
+            Env = [ "LANG=C.UTF-8" ];
+          };
+          maxLayers = 100; # less than Docker max layers to allow extending
+        };
+
       };
     };
 }
